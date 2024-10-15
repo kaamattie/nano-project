@@ -1,0 +1,81 @@
+import random
+
+
+
+# Functie om woorden te laden uit een tekstbestand
+def laad_woorden(bestandsnaam):
+    try:
+        with open("/Users/Akgurbuz/PycharmProjects/pythonProject2/woorden.txt", "r") as bestand:
+            # Lees de woorden en verwijder witruimte en nieuwe regels
+            woorden = [woord.strip() for woord in bestand.readlines()]
+        return woorden
+    except FileNotFoundError:
+        print(f"Het bestand {bestandsnaam} kan niet worden gevonden.")
+        return []
+
+
+
+# Functie om de gebruiker te verwelkomen en de naam te vragen
+def welkom():
+    print("Welkom bij Galgje!")
+    naam = input("Wat is je naam? ")
+    print(f"Hallo, {naam}! Veel succes met Galgje!")
+    return naam
+
+
+# Functie om de status van het geraden woord weer te geven
+def toon_status(woord, geraden_letters):
+    status = ''.join([letter if letter in geraden_letters else '_' for letter in woord])
+    print(f"Het woord: {status}")
+
+
+# Functie voor het Galgje-spel
+def speel_galgje(woordenlijst):
+    woord = random.choice(woordenlijst).lower()
+    geraden_letters = set()
+    verkeerde_pogingen = 0
+    maximale_pogingen = 6  # Typisch aantal voor Galgje
+
+    print(f"Het woord heeft {len(woord)} letters.")
+
+    while verkeerde_pogingen < maximale_pogingen:
+        toon_status(woord, geraden_letters)
+        gok = input("Raad een letter: ").lower()
+
+        if len(gok) != 1 or not gok.isalpha():
+            print("Voer één letter in.")
+            continue
+
+        if gok in geraden_letters:
+            print("Je hebt deze letter al geraden.")
+            continue
+
+        if gok in woord:
+            geraden_letters.add(gok)
+            print(f"Goed gedaan! De letter '{gok}' zit in het woord.")
+        else:
+            verkeerde_pogingen += 1
+            print(
+                f"Helaas, de letter '{gok}' zit niet in het woord. Pogingen over: {maximale_pogingen - verkeerde_pogingen}.")
+
+        if set(woord).issubset(geraden_letters):
+            print(f"Gefeliciteerd! Je hebt het woord '{woord}' geraden.")
+            break
+    else:
+        print(f"Helaas, je hebt het woord niet geraden. Het juiste woord was '{woord}'.")
+
+
+# Main functie om het spel te starten
+def main():
+    naam = welkom()
+    woordenlijst = laad_woorden('woorden.txt')
+
+    if woordenlijst:
+        speel_galgje(woordenlijst)
+    else:
+        print("Het spel kan niet worden gestart zonder woorden.")
+
+
+# Start het spel
+if __name__ == "__main__":
+    main()
